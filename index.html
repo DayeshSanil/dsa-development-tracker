@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My DSA + Development Tracker</title>
+<style>
+:root{
+  --bg:#0b1020;--panel:#131b2e;--panel2:#18233a;--text:#eef3ff;--muted:#a7b3ca;
+  --line:#293752;--accent:#7c9cff;--accent2:#56d6b0;--yellow:#f5c76b;--red:#ff8585;
+  --green:#64dba5;--shadow:0 14px 36px rgba(0,0,0,.22);--radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top right,#172647 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:#a9c0ff}
+.wrap{max-width:1440px;margin:auto;padding:24px}
+header{display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#7c9cff,#56d6b0);color:#07111f;font-weight:900;font-size:21px}
+h1{font-size:clamp(24px,3vw,34px);line-height:1.1;margin:0 0 5px}h2{font-size:20px;margin:0 0 14px}h3{font-size:16px;margin:0 0 8px}
+p{margin:6px 0}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted)}
+.header-actions,.row,.controls,.button-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 13px;border-radius:11px;transition:.15s}
+.btn:hover{transform:translateY(-1px);border-color:var(--accent)}.btn.primary{background:var(--accent);color:#091226;border-color:var(--accent);font-weight:750}.btn.good{background:#14372f;border-color:#25634f;color:#9ef0ce}.btn.danger{color:#ffb1b1}
+input,select,textarea{background:#0d1527;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-width:0}
+input[type="checkbox"]{accent-color:var(--accent2);width:17px;height:17px;cursor:pointer}
+textarea{width:100%;min-height:74px;resize:vertical}
+.top-note{background:#172541;border:1px solid #31466d;padding:13px 16px;border-radius:14px;margin-bottom:18px;color:#dce7ff}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.stat,.card{background:linear-gradient(180deg,rgba(24,35,58,.96),rgba(19,27,46,.98));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.stat{padding:16px}.stat .num{font-size:27px;font-weight:800;margin-top:4px}.stat .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.07em}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px;align-items:start}
+.sidebar{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding:15px}
+.main{min-width:0}.card{padding:18px;margin-bottom:16px}
+.week-list{display:grid;gap:7px;margin-top:12px}
+.week-btn{display:flex;gap:10px;align-items:center;text-align:left;width:100%;border:1px solid transparent;background:transparent;color:var(--text);border-radius:11px;padding:10px}
+.week-btn:hover{background:#1a2944}.week-btn.active{background:#22365a;border-color:#4967a0}
+.week-number{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#263957;font-weight:800;flex-shrink:0}
+.week-btn .week-title{font-size:13px;font-weight:650}.week-btn .week-sub{font-size:11px;color:var(--muted)}
+.progress-track{height:8px;border-radius:20px;background:#263149;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .2s}
+.progress-line{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);margin:9px 0 6px}
+.section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:12px;color:var(--muted)}
+.problem-list{display:grid;gap:10px}
+.problem{display:grid;grid-template-columns:24px minmax(160px,1fr) 110px;gap:10px;align-items:start;padding:12px;background:#0e1729;border:1px solid #26344f;border-radius:13px}
+.problem.done{border-color:#2d705a;background:#10251f}
+.problem-name{font-weight:650}.problem-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.problem-controls{display:flex;flex-direction:column;gap:6px}.problem-controls select{width:100%;font-size:12px;padding:7px}
+.revision-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:9px}.rev{display:flex;gap:5px;align-items:center;font-size:12px;color:var(--muted);background:#172238;border-radius:8px;padding:5px 7px}
+.problem-note{grid-column:2/4}.problem-note input{width:100%;font-size:12px}
+.status{font-size:11px;font-weight:800;border-radius:6px;padding:3px 6px;display:inline-block}
+.status.G{color:#9cf0c8;background:#14372f}.status.Y{color:#ffe1a1;background:#46371a}.status.R{color:#ffb1b1;background:#451f2a}.status.H{color:#c7b5ff;background:#302449}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}.task{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid #24324a}.task:last-child{border-bottom:0}
+.task label{cursor:pointer}.task input{margin-top:3px;flex-shrink:0}.task.done label{text-decoration:line-through;color:#8292ad}
+textarea.notes{margin-top:7px}
+.daily-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.daily-item{padding:12px;background:#0e1729;border:1px solid #26344f;border-radius:12px}.daily-item label{display:flex;gap:8px;align-items:center;font-weight:650}.daily-item p{font-size:12px;color:var(--muted);margin:6px 0 0}
+.revision-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #273650}.revision-item:last-child{border-bottom:0}
+.revision-item .rev-title{font-weight:650}.due{font-size:12px;border-radius:8px;padding:4px 8px;white-space:nowrap}.due.today{background:#4a3820;color:#ffe0a0}.due.late{background:#49232b;color:#ffb6b6}.due.soon{background:#1c3454;color:#b8d4ff}.due.done{background:#14372f;color:#9ef0ce}
+.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed #34425c;border-radius:12px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar input{flex:1;min-width:180px}
+details summary{cursor:pointer;color:#c7d4ed;font-weight:700;margin-bottom:10px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 0 8px}
+@media(max-width:950px){.layout{grid-template-columns:1fr}.sidebar{position:static;max-height:none}.week-list{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.daily-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.wrap{padding:12px}.stats{gap:8px}.stat{padding:12px}.stat .num{font-size:22px}.week-list{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.problem{grid-template-columns:22px minmax(0,1fr)}.problem-controls{grid-column:2;flex-direction:row}.problem-controls select{flex:1}.problem-note{grid-column:2}.daily-grid{grid-template-columns:1fr 1fr}.card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><div class="logo">DS</div><div><h1>DSA + Development Tracker</h1><div class="muted">24-week roadmap · Java · daily progress · private on this PC</div></div></div>
+  <div class="header-actions">
+    <button class="btn" id="exportBtn">Export backup</button>
+    <button class="btn" id="importBtn">Import backup</button>
+    <input id="importFile" type="file" accept="application/json" hidden>
+    <button class="btn danger" id="resetBtn">Reset all</button>
+  </div>
+</header>
+<div class="top-note"><strong>Built to keep you moving:</strong> attempt honestly for 20–30 minutes, use a hint if needed, record the key idea, and move on at the topic deadline. Green means you can solve and explain it independently—not just understand the editorial. This page saves automatically in this browser on this PC.</div>
+<div class="stats">
+  <div class="stat"><div class="label">Questions attempted</div><div class="num" id="attemptedStat">0</div><div class="small" id="questionTotal">of 100+ planned items</div></div>
+  <div class="stat"><div class="label">Independent (Green)</div><div class="num" id="greenStat">0</div><div class="small">Can explain the approach</div></div>
+  <div class="stat"><div class="label">Revisions due</div><div class="num" id="dueStat">0</div><div class="small">R1 / R2 / R3 waiting</div></div>
+  <div class="stat"><div class="label">Daily routine streak</div><div class="num" id="streakStat">0 days</div><div class="small">Based on days with a routine item checked</div></div>
+</div>
+<div class="layout">
+  <aside class="sidebar card">
+    <h2>Roadmap</h2>
+    <div class="progress-line"><span>Overall plan</span><strong id="overallPct">0%</strong></div>
+    <div class="progress-track"><div class="progress-fill" id="overallFill"></div></div>
+    <p class="small">Choose a week. Your checks, statuses and notes stay saved as you move around.</p>
+    <div class="week-list" id="weekList"></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+    <button class="btn" style="width:100%" id="goTodayBtn">Open today's routine</button>
+    <p class="small" style="margin-top:10px">Storage note: progress is saved in this browser using localStorage. Export a backup occasionally, especially before clearing browser data or changing browsers.</p>
+  </aside>
+  <main class="main">
+    <section class="card" id="dailyCard">
+      <div class="section-head"><div><h2>Today's routine</h2><p class="muted">Small, repeatable actions beat catch-up marathons.</p></div><div class="row"><input type="date" id="dailyDate"><span class="pill" id="dailyPercent">0% complete</span></div></div>
+      <div class="daily-grid" id="dailyGrid"></div>
+      <div class="two-col" style="margin-top:14px">
+        <div><label class="small" for="dailyWin">What did I learn / understand today?</label><textarea id="dailyWin" placeholder="Write one useful thing in your own words..."></textarea></div>
+        <div><label class="small" for="dailyBlocker">What blocked me and what's the next small action?</label><textarea id="dailyBlocker" placeholder="Be specific. Example: retry Two Sum using a HashMap..."></textarea></div>
+      </div>
+      <div class="progress-line"><span>Today's routine</span><strong id="dailyProgressText">0 / 4</strong></div><div class="progress-track"><div class="progress-fill" id="dailyProgressFill"></div></div>
+    </section>
+    <section class="card" id="revisionCard">
+      <div class="section-head"><div><h2>Revision queue</h2><p class="muted">R1 = D+1 · R2 = D+7 · R3 = D+30. Re-solve or explain from memory.</p></div><span class="pill" id="revisionSummary">Nothing due yet</span></div>
+      <div class="toolbar"><select id="revisionFilter"><option value="due">Due / overdue</option><option value="all">All scheduled revisions</option><option value="next7">Due in next 7 days</option></select><input id="revisionSearch" placeholder="Search a problem..."></div>
+      <div id="revisionList"></div>
+    </section>
+    <section class="card" id="weekCard">
+      <div class="section-head"><div><div class="small" id="weekKicker">WEEK 1 OF 24</div><h2 id="weekHeading">Java refresh + complexity</h2><p class="muted" id="weekLearn"></p></div><div style="min-width:150px"><span class="pill" id="weekPct">0% complete</span><div class="progress-track" style="margin-top:9px"><div class="progress-fill" id="weekFill"></div></div></div></div>
+      <div class="toolbar" style="margin-top:15px"><input id="problemSearch" placeholder="Search this week's problems..."><select id="problemFilter"><option value="all">All problems</option><option value="unattempted">Not attempted</option><option value="attempted">Attempted</option><option value="weak">Yellow / Red / Hint</option><option value="revision">Revision incomplete</option></select></div>
+      <div class="problem-list" id="problemList"></div>
+      <div class="two-col" style="margin-top:18px">
+        <div class="card" style="margin:0;background:#111b2e;box-shadow:none">
+          <h3>Weekly revision markers</h3><p class="small">TR = topic revision · DR = development review. Check them only when actually done.</p>
+          <div id="revisionTasks"></div>
+        </div>
+        <div class="card" style="margin:0;background:#111b2e;box-shadow:none">
+          <h3>Development milestone</h3><p id="devMilestone" style="margin-bottom:12px"></p>
+          <div class="task"><input type="checkbox" id="devDone"><label for="devDone">Milestone implemented, tested, and documented</label></div>
+          <label class="small" for="devLog">Build log: what I built, what broke, what I learned, next feature</label>
+          <textarea id="devLog" class="notes" placeholder="Keep this short and honest..."></textarea>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <label class="small" for="weekCheckin">Saturday check-in — what trapped me, what I learned, and the first task for next week</label>
+        <textarea id="weekCheckin" class="notes" placeholder="Questions attempted, G/Y/R count, pattern I can explain, next task..."></textarea>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Rules to protect your progress</h2>
+      <div class="two-col">
+        <div><h3>When a problem traps you</h3><ol class="muted"><li>0–5 min: restate constraints and example.</li><li>5–15 min: write brute force.</li><li>15–25 min: test patterns.</li><li>At 25–30 min: use one hint/editorial.</li><li>Close it and implement from memory; mark H if you needed help.</li><li>At the topic deadline, mark Y/R and move on.</li></ol></div>
+        <div><h3>When college interrupts</h3><ul class="muted"><li>Do not restart Week 1 after missing days.</li><li>During exams, pause new topics; rest if you need to.</li><li>After exams: one familiar problem, then restart current week at half workload.</li><li>One main project only. DSA and development continue in parallel.</li><li>Green questions get quick recall; prioritise Yellow/Red for deeper revision.</li></ul></div>
+      </div>
+    </section>
+  </main>
+</div>
+<footer>Local-first tracker · No account · No server · Use Export backup to protect your progress.</footer>
+</div>
+<script>
+const PLAN = [
+{title:"Java refresh + complexity",learn:"Arrays, methods, loops, Big O; confirm Java workflow.",questions:["Find Maximum in an Array (self-practice)","Reverse an Array (self-practice)","Check if Array Is Sorted (self-practice)","Linear Search (self-practice)","Binary Search (self-practice)"],dev:"Audit your existing Monkeytype-like website. Make a README with current features, bugs, and a short plan. Do not rebuild it.",markers:["TR: Re-do one array exercise without notes","DR: Run the site and record the next feature"]},
+{title:"Array fundamentals",learn:"In-place changes, two pointers, frequency counting.",questions:["Second Largest Element in an Array (self-practice)","Remove Duplicates from Sorted Array","Move Zeroes","Merge Sorted Array","Best Time to Buy and Sell Stock"],dev:"Refresh HTML semantics and CSS layout/responsiveness. Fix one layout issue on your existing site.",markers:["R1: Week 1 questions","TR: Second Largest + Move Zeroes","DR: Check responsive layout"]},
+{title:"Hashing + basic strings",learn:"HashMap, HashSet, counts, complements.",questions:["Two Sum","Contains Duplicate","Valid Anagram","Majority Element","Missing Number"],dev:"JavaScript refresh: variables, functions, arrays/objects, conditionals, loops. Add a small feature to the website using JS.",markers:["R1: Week 2 questions","R2: Week 1 questions","TR: Two Sum + Valid Anagram","DR: Feature works in browser"]},
+{title:"Subarrays + sliding window",learn:"Prefix sums; fixed/variable window; when hashing helps.",questions:["Maximum Subarray","Product of Array Except Self","Longest Substring Without Repeating Characters","Subarray Sum Equals K"],dev:"DOM events and input validation. Add a setting or statistics panel to your typing site. Keep the feature small.",markers:["R1: Week 3 questions","R2: Week 2 questions","TR: One prefix-sum + one window problem","DR: Test edge cases"]},
+{title:"Binary search",learn:"Bounds, rotated arrays, answer-space search.",questions:["Search Insert Position","Find First and Last Position of Element in Sorted Array","Search in Rotated Sorted Array","Find Minimum in Rotated Sorted Array","Koko Eating Bananas"],dev:"Learn Git basics: init/clone, status, add, commit, push. Put the existing project in a Git repository with a clear README.",markers:["R1: Week 4 questions","R2: Week 3 questions","TR: Implement binary search from memory","DR: Commit a working version"]},
+{title:"Recursion + backtracking",learn:"Base case, call stack, subsets/permutations.",questions:["Fibonacci Number (compare approaches)","Subsets","Permutations","Combination Sum"],dev:"Finish one small frontend improvement and deploy the frontend if not already deployed. Write deployment steps in README.",markers:["R1: Week 5 questions","R2: Week 4 questions","TR: Trace one recursive call tree","DR: Deployed link or deployment checklist"]},
+{title:"Linked lists",learn:"Nodes/references, reversal, slow-fast pointers.",questions:["Reverse Linked List","Middle of the Linked List","Linked List Cycle","Merge Two Sorted Lists","Remove Nth Node From End of List"],dev:"Start backend fundamentals: Node.js runtime, npm, modules, environment variables. Create a tiny server and run it locally.",markers:["R1: Week 6 questions","R2: Week 5 questions","TR: Reverse list + cycle detection","DR: Server starts from documented command"]},
+{title:"Stacks + queues",learn:"LIFO/FIFO, Deque, monotonic stack introduction.",questions:["Valid Parentheses","Min Stack","Implement Queue using Stacks","Daily Temperatures"],dev:"Learn HTTP basics and Express routing. Create GET/POST routes and test them with a simple API client or browser.",markers:["R1: Week 7 questions","R2: Week 6 questions","TR: Valid Parentheses + Daily Temperatures","DR: Routes return expected responses"]},
+{title:"Heaps + mixed review",learn:"PriorityQueue, min/max heap, top-k patterns.",questions:["Kth Largest Element in an Array","Top K Frequent Elements","Find Median from Data Stream"],dev:"Connect one frontend action to a backend API. Add loading/error states and validate inputs.",markers:["R1: Week 8 questions","R2: Week 7 questions","TR: Mixed 2-question check","DR: Front-to-back request works"]},
+{title:"Trees I",learn:"Tree node, DFS traversals, height, recursion.",questions:["Maximum Depth of Binary Tree","Invert Binary Tree","Same Tree","Diameter of Binary Tree","Balanced Binary Tree"],dev:"Choose a database for the project (MySQL is a reasonable choice). Learn tables, primary keys, foreign keys, SELECT/INSERT/UPDATE/DELETE.",markers:["R1: Week 9 questions","R2: Week 8 questions","TR: Write preorder/inorder/postorder from memory","DR: Create a small schema"]},
+{title:"Trees II + BST",learn:"BFS/level order, BST invariant, LCA.",questions:["Binary Tree Level Order Traversal","Binary Tree Right Side View","Validate Binary Search Tree","Kth Smallest Element in a BST","Lowest Common Ancestor of a Binary Tree"],dev:"Connect Express to MySQL. Implement one CRUD flow for a project entity (e.g. typing session or task).",markers:["R1: Week 10 questions","R2: Week 9 questions","TR: One DFS + one BFS problem","DR: CRUD persists after server restart"]},
+{title:"Greedy + checkpoint",learn:"Sort + choose; justify why local choice works. Midpoint review.",questions:["Assign Cookies","Jump Game","Jump Game II","Non-overlapping Intervals"],dev:"Review project scope. Write a short feature list and stop adding features. Fix bugs and improve error handling.",markers:["R1: Week 11 questions","R2: Week 10 questions","TR: Explain greedy choice on one problem","DR: Project scope frozen"]},
+{title:"Graphs I",learn:"Adjacency list, BFS, DFS, visited set, grid graphs.",questions:["Number of Islands","Flood Fill","Rotting Oranges","Number of Provinces"],dev:"Build the core project flow: create/read/update/delete data through the UI and backend.",markers:["R1: Week 12 questions","R2: Week 11 questions","TR: Implement BFS/DFS skeleton","DR: Core flow works end-to-end"]},
+{title:"Graphs II",learn:"Topological sort, cycle detection, shortest path basics.",questions:["Course Schedule","Course Schedule II","Redundant Connection","Network Delay Time"],dev:"Add form validation, useful errors, and basic security hygiene (never commit secrets; validate server inputs).",markers:["R1: Week 13 questions","R2: Week 12 questions","TR: Explain topological sorting","DR: Invalid input is handled"]},
+{title:"Dynamic programming I",learn:"State, recurrence, memoization vs tabulation.",questions:["Climbing Stairs","Min Cost Climbing Stairs","House Robber","House Robber II"],dev:"Add authentication only if core CRUD is stable; otherwise finish and test core flows. Avoid scope creep.",markers:["R1: Week 14 questions","R2: Week 13 questions","TR: Write state + recurrence for two DP questions","DR: One reliable user flow"]},
+{title:"Dynamic programming II",learn:"Grid and subsequence DP; space optimisation when clear.",questions:["Coin Change","Unique Paths","Minimum Path Sum","Longest Common Subsequence","Longest Increasing Subsequence"],dev:"Finish project functionality and improve UI usability. Write setup instructions and screenshots in README.",markers:["R1: Week 15 questions","R2: Week 14 questions","TR: Solve one 1D DP + one grid DP","DR: Another person could follow README"]},
+{title:"DP III + weak spots",learn:"Finish core DP pass; revisit gaps without restarting the whole sheet.",questions:["Partition Equal Subset Sum","Word Break","Edit Distance"],dev:"Testing week: try edge cases, fix crashes, remove unused code, check mobile layout, and confirm deployment.",markers:["R1: Week 16 questions","R2: Week 15 questions","TR: List 3 DP templates from memory","DR: Release candidate works"]},
+{title:"Core topic revision I",learn:"Mixed arrays, hashing, strings, binary search.",questions:["Re-solve: Two Sum","Re-solve: Best Time to Buy and Sell Stock","Re-solve: Maximum Subarray","Re-solve: Longest Substring Without Repeating Characters","Re-solve: Search in Rotated Sorted Array"],dev:"Deploy or redeploy project; check live version, links, README, and repository cleanliness.",markers:["R2: Week 16 questions","R3: Week 14 where due","TR: Only Yellow/Red first","DR: Live link and repo are present"]},
+{title:"Core topic revision II",learn:"Recursion, linked lists, stacks, heaps.",questions:["Re-solve: Subsets","Re-solve: Reverse Linked List","Re-solve: Linked List Cycle","Re-solve: Valid Parentheses","Re-solve: Top K Frequent Elements"],dev:"Prepare a 2-minute project explanation: problem, features, architecture, database, challenge, what you learned.",markers:["R2: Week 17 questions","R3: Week 15 where due","TR: Explain each pattern without code first","DR: Record/practise project pitch"]},
+{title:"Core topic revision III",learn:"Trees, greedy, graphs.",questions:["Re-solve: Maximum Depth of Binary Tree","Re-solve: Binary Tree Level Order Traversal","Re-solve: Jump Game","Re-solve: Number of Islands","Re-solve: Course Schedule"],dev:"Fix the top three project issues. Do not add new features unless all key flows are stable.",markers:["R2: Week 18 questions","R3: Week 16 where due","TR: One tree + one graph trace","DR: Top bugs closed"]},
+{title:"DP + mixed problem solving",learn:"Revisit DP fundamentals and identify weak patterns.",questions:["Re-solve: Climbing Stairs","Re-solve: House Robber","Re-solve: Coin Change","Re-solve: Longest Common Subsequence"],dev:"Resume and GitHub review: clear project description, skills you can defend, repository and deployment links.",markers:["R2: Week 19 questions","R3: Week 17 where due","TR: Write DP state/recurrence","DR: Resume draft exists"]},
+{title:"Timed practice + interview explanation",learn:"Two mixed sessions; prioritise reasoning, edge cases, complexity.",questions:["Timed mixed practice: Two Sum","Timed mixed practice: Product of Array Except Self","Timed mixed practice: Binary Search","Timed mixed practice: Lowest Common Ancestor of a Binary Tree"],dev:"Practise explaining project and one technical decision aloud. Revise Java collections and OOP basics.",markers:["R2: Week 20 questions","R3: Week 18 where due","TR: Record where time was lost","DR: Project explanation under 2–3 minutes"]},
+{title:"Mock interview week",learn:"Practise under realistic conditions; do not add many new topics.",questions:["Mock 1: one array/hash problem + one tree/graph problem","Mock 2: one binary search/stack problem + one DP problem"],dev:"Do a mock project walkthrough and fix only high-impact issues. Review SQL joins, HTTP, Git and OOP.",markers:["R2: Week 21 questions","R3: Week 19 where due","TR: Revisit failed mock patterns","DR: Rehearse project walkthrough"]},
+{title:"Final review + next cycle",learn:"Assess strengths, select next 10 problems based on weaknesses; continue applications.",questions:["Re-solve your 5 highest-priority Yellow/Red problems","Re-solve 2 Green problems from memory","One unseen easy/medium problem under timed conditions"],dev:"Final project audit: deployment works, README is accurate, no secrets, resume links work. Apply to suitable internships/placements.",markers:["R2: Week 22 questions","R3: Week 20 where due","Final review: Compare Week 1 vs Week 24","DR: Project, README and resume links checked"]}
+];
+const DAILY_ITEMS=[
+["DSA focus","One planned problem or a focused attempt."],
+["Revision","Do due R1/R2/R3 or explain an old problem."],
+["Development","Build/test the week's small feature."],
+["Recall + plan","Write one insight and choose tomorrow's first task."]
+];
+const STORAGE_KEY="dsaDevTracker_v1";
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const blankState=()=>({selectedWeek:0,questions:{},weeks:{},daily:{},startDate:todayISO()});
+let state=loadState();let selectedWeek=Math.min(23,Math.max(0,state.selectedWeek||0));
+function loadState(){try{return {...blankState(),...JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}}catch(e){return blankState()}}
+function save(){state.selectedWeek=selectedWeek;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderStats();renderWeekList();renderRevisionQueue()}
+function qKey(w,i){return `${w}-${i}`}
+function getQ(w,i){return state.questions[qKey(w,i)]||(state.questions[qKey(w,i)]={status:"",firstDate:"",revisions:{R1:false,R2:false,R3:false},note:""})}
+function getW(w){return state.weeks[w]||(state.weeks[w]={markers:{},devDone:false,devLog:"",checkin:""})}
+function getD(date){return state.daily[date]||(state.daily[date]={checks:[false,false,false,false],win:"",blocker:""})}
+function datePlus(date,days){if(!date)return "";const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+days);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function prettyDate(s){if(!s)return "not scheduled";return new Date(s+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}
+function allQuestions(){let a=[];PLAN.forEach((w,wi)=>w.questions.forEach((name,qi)=>a.push({w:wi,i:qi,name,...getQ(wi,qi)})));return a}
+function statusLabel(s){return ({G:"G · Green",Y:"Y · Yellow",R:"R · Red",H:"H · Hint used","":"Not set"})[s]||"Not set"}
+function weekPercent(wi){const w=PLAN[wi],qs=w.questions.map((_,i)=>getQ(wi,i));let done=qs.filter(q=>q.status==="G"||q.status==="Y"||q.status==="R"||q.status==="H").length;let markers=Object.values(getW(wi).markers).filter(Boolean).length+(getW(wi).devDone?1:0);let total=qs.length+w.markers.length+1;return Math.round((done+markers)/total*100)}
+function renderWeekList(){const el=document.getElementById("weekList");el.innerHTML=PLAN.map((w,i)=>`<button class="week-btn ${i===selectedWeek?"active":""}" data-week="${i}"><span class="week-number">${String(i+1).padStart(2,"0")}</span><span style="flex:1"><span class="week-title">${w.title}</span><br><span class="week-sub">${weekPercent(i)}% · ${w.questions.filter((_,j)=>!!getQ(i,j).status).length}/${w.questions.length} attempted</span></span></button>`).join("");el.querySelectorAll("[data-week]").forEach(b=>b.onclick=()=>{selectedWeek=+b.dataset.week;renderWeek();renderWeekList();document.getElementById("weekCard").scrollIntoView({behavior:"smooth",block:"start"})})}
+function renderStats(){const qs=allQuestions();const attempted=qs.filter(q=>q.status).length;const greens=qs.filter(q=>q.status==="G").length;const revisions=revisionEntries();const due=revisions.filter(x=>!x.checked&&x.date<=todayISO()).length;document.getElementById("attemptedStat").textContent=attempted;document.getElementById("questionTotal").textContent=`of ${qs.length} planned items`;document.getElementById("greenStat").textContent=greens;document.getElementById("dueStat").textContent=due;document.getElementById("streakStat").textContent=calcStreak()+" days";let total=PLAN.reduce((s,_,i)=>s+weekPercent(i),0)/PLAN.length;document.getElementById("overallPct").textContent=Math.round(total)+"%";document.getElementById("overallFill").style.width=total+"%"}
+function calcStreak(){let d=todayISO(),n=0;while(true){const day=state.daily[d];if(!day||!day.checks||!day.checks.some(Boolean))break;n++;d=datePlus(d,-1)}return n}
+function renderWeek(){const w=PLAN[selectedWeek],ws=getW(selectedWeek);document.getElementById("weekKicker").textContent=`WEEK ${selectedWeek+1} OF 24`;document.getElementById("weekHeading").textContent=w.title;document.getElementById("weekLearn").textContent="Focus: "+w.learn;document.getElementById("devMilestone").textContent=w.dev;document.getElementById("devDone").checked=!!ws.devDone;document.getElementById("devLog").value=ws.devLog||"";document.getElementById("weekCheckin").value=ws.checkin||"";let pct=weekPercent(selectedWeek);document.getElementById("weekPct").textContent=pct+"% complete";document.getElementById("weekFill").style.width=pct+"%";
+const search=document.getElementById("problemSearch").value.toLowerCase(),filter=document.getElementById("problemFilter").value;
+const list=document.getElementById("problemList");let visible=0;list.innerHTML=w.questions.map((name,i)=>{const q=getQ(selectedWeek,i);const attempted=!!q.status;const weak=["Y","R","H"].includes(q.status);const revDone=Object.values(q.revisions).every(Boolean);if(!name.toLowerCase().includes(search))return "";if(filter==="unattempted"&&attempted)return "";if(filter==="attempted"&&!attempted)return "";if(filter==="weak"&&!weak)return "";if(filter==="revision"&&revDone)return "";visible++;const checked=attempted?"checked":"";return `<article class="problem ${q.status==="G"?"done":""}"><input type="checkbox" aria-label="Mark attempted" data-attempt="${i}" ${checked}><div><div class="problem-name">${escapeHtml(name)}</div><div class="problem-meta">${q.firstDate?`First attempt: ${prettyDate(q.firstDate)}`:"No attempt date yet"} ${q.status?` · <span class="status ${q.status}">${statusLabel(q.status)}</span>`:""}</div><div class="revision-row">${["R1","R2","R3"].map((r,k)=>{const dueDate=q.firstDate?datePlus(q.firstDate,[1,7,30][k]):"";return `<label class="rev" title="${r}: ${["D+1","D+7","D+30"][k]}"><input type="checkbox" data-rev="${i}" data-revtype="${r}" ${q.revisions[r]?"checked":""} ${!q.firstDate?"disabled":""}>${r} ${dueDate?prettyDate(dueDate):"—"}</label>`}).join("")}</div></div><div class="problem-controls"><select data-status="${i}" aria-label="Problem status"><option value="" ${!q.status?"selected":""}>Status</option><option value="G" ${q.status==="G"?"selected":""}>G · Green</option><option value="Y" ${q.status==="Y"?"selected":""}>Y · Yellow</option><option value="R" ${q.status==="R"?"selected":""}>R · Red</option><option value="H" ${q.status==="H"?"selected":""}>H · Hint used</option></select><button class="btn" style="font-size:11px;padding:6px" data-clear="${i}">Clear</button></div><div class="problem-note"><input data-note="${i}" value="${escapeAttr(q.note||"")}" placeholder="Key idea / mistake / time & space complexity (optional)"></div></article>`}).join("");
+if(!visible)list.innerHTML='<div class="empty">No problems match these filters.</div>';
+list.querySelectorAll("[data-attempt]").forEach(el=>el.onchange=()=>{let q=getQ(selectedWeek,+el.dataset.attempt);if(el.checked){if(!q.firstDate)q.firstDate=todayISO();if(!q.status)q.status="Y"}else{q.status="";q.firstDate="";q.revisions={R1:false,R2:false,R3:false}};renderWeek();save()});
+list.querySelectorAll("[data-status]").forEach(el=>el.onchange=()=>{let q=getQ(selectedWeek,+el.dataset.status);if(el.value){if(!q.firstDate)q.firstDate=todayISO();q.status=el.value}else{q.status="";q.firstDate="";q.revisions={R1:false,R2:false,R3:false}}renderWeek();save()});
+list.querySelectorAll("[data-rev]").forEach(el=>el.onchange=()=>{getQ(selectedWeek,+el.dataset.rev).revisions[el.dataset.revtype]=el.checked;save();renderWeek();});
+list.querySelectorAll("[data-note]").forEach(el=>el.oninput=()=>{getQ(selectedWeek,+el.dataset.note).note=el.value;saveQuiet()});
+list.querySelectorAll("[data-clear]").forEach(el=>el.onclick=()=>{if(confirm("Clear this problem's status, dates and revision checks?")){state.questions[qKey(selectedWeek,+el.dataset.clear)]={status:"",firstDate:"",revisions:{R1:false,R2:false,R3:false},note:""};renderWeek();save()}});
+document.getElementById("revisionTasks").innerHTML=w.markers.map((m,i)=>`<div class="task ${ws.markers[i]?"done":""}"><input type="checkbox" data-marker="${i}" id="marker${i}" ${ws.markers[i]?"checked":""}><label for="marker${i}">${escapeHtml(m)}</label></div>`).join("");
+document.querySelectorAll("[data-marker]").forEach(el=>el.onchange=()=>{ws.markers[el.dataset.marker]=el.checked;save();renderWeekList();renderWeek()});
+document.getElementById("devDone").onchange=e=>{ws.devDone=e.target.checked;save();renderWeekList();renderWeek()};
+document.getElementById("devLog").oninput=e=>{ws.devLog=e.target.value;saveQuiet()};
+document.getElementById("weekCheckin").oninput=e=>{ws.checkin=e.target.value;saveQuiet()};
+}
+function revisionEntries(){let out=[];PLAN.forEach((w,wi)=>w.questions.forEach((name,qi)=>{const q=getQ(wi,qi);if(!q.firstDate)return;["R1","R2","R3"].forEach((r,k)=>out.push({w:wi,i:qi,name,date:datePlus(q.firstDate,[1,7,30][k]),type:r,checked:!!q.revisions[r],status:q.status}))}));return out}
+function renderRevisionQueue(){const filter=document.getElementById("revisionFilter")?.value||"due",search=(document.getElementById("revisionSearch")?.value||"").toLowerCase(),today=todayISO();let entries=revisionEntries().filter(x=>x.name.toLowerCase().includes(search));if(filter==="due")entries=entries.filter(x=>!x.checked&&x.date<=today);if(filter==="next7")entries=entries.filter(x=>!x.checked&&x.date>=today&&x.date<=datePlus(today,7));entries.sort((a,b)=>a.date.localeCompare(b.date));document.getElementById("revisionSummary").textContent=`${entries.filter(x=>!x.checked).length} remaining in view`;const el=document.getElementById("revisionList");if(!entries.length){el.innerHTML='<div class="empty">No revisions in this view. Once you record a first attempt, R1/R2/R3 dates appear here automatically.</div>';return}el.innerHTML=entries.map(x=>{const stateClass=x.checked?"done":x.date<today?"late":x.date===today?"today":"soon";const text=x.checked?"Completed":x.date<today?"Overdue":x.date===today?"Due today":"Upcoming";return `<div class="revision-item"><div><div class="rev-title">${escapeHtml(x.name)} <span class="pill">${x.type}</span></div><div class="small">Week ${x.w+1} · ${prettyDate(x.date)} · ${x.status?statusLabel(x.status):"Status not set"}</div></div><div class="row"><span class="due ${stateClass}">${text}</span><input type="checkbox" title="Mark revision complete" data-queue-rev="${x.w}-${x.i}-${x.type}" ${x.checked?"checked":""} aria-label="Complete ${x.type} for ${escapeAttr(x.name)}"></div></div>`}).join("");el.querySelectorAll("[data-queue-rev]").forEach(inp=>inp.onchange=()=>{const [w,i,r]=inp.dataset.queueRev.split("-");getQ(+w,+i).revisions[r]=inp.checked;save();renderWeek();renderRevisionQueue()})}
+function renderDaily(){const date=document.getElementById("dailyDate").value||todayISO();document.getElementById("dailyDate").value=date;const d=getD(date);document.getElementById("dailyGrid").innerHTML=DAILY_ITEMS.map((item,i)=>`<div class="daily-item"><label><input type="checkbox" data-daily="${i}" ${d.checks[i]?"checked":""}>${item[0]}</label><p>${item[1]}</p></div>`).join("");document.querySelectorAll("[data-daily]").forEach(el=>el.onchange=()=>{d.checks[+el.dataset.daily]=el.checked;renderDaily();save()});document.getElementById("dailyWin").value=d.win||"";document.getElementById("dailyBlocker").value=d.blocker||"";document.getElementById("dailyWin").oninput=e=>{d.win=e.target.value;saveQuiet()};document.getElementById("dailyBlocker").oninput=e=>{d.blocker=e.target.value;saveQuiet()};let n=d.checks.filter(Boolean).length,p=Math.round(n/DAILY_ITEMS.length*100);document.getElementById("dailyPercent").textContent=p+"% complete";document.getElementById("dailyProgressText").textContent=`${n} / ${DAILY_ITEMS.length}`;document.getElementById("dailyProgressFill").style.width=p+"%"}
+let saveTimer;function saveQuiet(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderStats()},250)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function escapeAttr(s){return escapeHtml(s)}
+document.getElementById("dailyDate").value=todayISO();document.getElementById("dailyDate").onchange=renderDaily;
+document.getElementById("problemSearch").oninput=renderWeek;document.getElementById("problemFilter").onchange=renderWeek;document.getElementById("revisionFilter").onchange=renderRevisionQueue;document.getElementById("revisionSearch").oninput=renderRevisionQueue;
+document.getElementById("goTodayBtn").onclick=()=>document.getElementById("dailyCard").scrollIntoView({behavior:"smooth",block:"start"});
+document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`dsa-dev-backup-${todayISO()}.json`;a.click();URL.revokeObjectURL(a.href)};
+document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const imported=JSON.parse(await f.text());if(!imported||typeof imported!=="object"||!imported.questions||!imported.daily)throw new Error("This file doesn't look like a tracker backup.");if(confirm("Import this backup? It will replace the progress currently saved in this browser.")){state={...blankState(),...imported};selectedWeek=Math.min(23,Math.max(0,state.selectedWeek||0));save();renderAll();alert("Backup imported successfully.")}}catch(err){alert("Could not import backup: "+err.message)}e.target.value=""};
+document.getElementById("resetBtn").onclick=()=>{if(confirm("This permanently clears all progress saved in this browser. Export a backup first if you may need it. Continue?")){state=blankState();selectedWeek=0;save();renderAll()}};
+function renderAll(){renderDaily();renderWeek();renderWeekList();renderStats();renderRevisionQueue()}
+renderAll();
+</script>
+</body>
+</html>
